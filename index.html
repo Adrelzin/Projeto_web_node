@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Loja de Plantas</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding-top: 120px;
+      background-color: #f0f8f5;
+    }
+
+    header {
+      display: flex;
+      align-items: center;
+      width: 100%;
+      height: 100px;
+      background-color: greenyellow;
+      position: fixed;
+      top: 0;
+      left: 0;
+      gap: 20px;
+      padding: 0 20px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+      z-index: 1000;
+    }
+
+    header img {
+      height: 80px;
+      border-radius: 50%;
+      border: 3px solid black;
+    }
+
+    header h1 {
+      font-size: 28px;
+      color: #2e7d32;
+    }
+
+    form {
+      margin: 20px;
+      background-color: #ffffff;
+      padding: 15px;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+
+    input, button {
+      padding: 8px;
+      margin: 5px;
+      border-radius: 4px;
+      border: 1px solid #ccc;
+    }
+
+    button {
+      background-color: #4caf50;
+      color: white;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: #45a049;
+    }
+
+    table {
+      width: 90%;
+      margin: 20px auto;
+      border-collapse: collapse;
+      background-color: #fff;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+
+    th, td {
+      padding: 10px;
+      border: 1px solid #ddd;
+      text-align: left;
+    }
+
+    th {
+      background-color: #c8e6c9;
+    }
+
+    footer {
+      text-align: center;
+      padding: 20px;
+      color: #777;
+    }
+
+    .mensagem {
+      margin: 20px;
+      padding: 10px;
+      border-radius: 4px;
+      display: none;
+    }
+
+    .mensagem.sucesso {
+      background-color: #d4edda;
+      color: #155724;
+      border: 1px solid #c3e6cb;
+    }
+
+    .mensagem.erro {
+      background-color: #f8d7da;
+      color: #721c24;
+      border: 1px solid #f5c6cb;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <img src="https://www.svgrepo.com/show/428309/plant.svg" alt="Logo Planta Viva" />
+    <h1>Planta Viva</h1>
+  </header>
+
+  <div id="mensagem" class="mensagem"></div>
+
+  <form id="formPlanta">
+    <input type="text" id="nome" placeholder="Nome da planta" required />
+    <input type="number" id="preco" placeholder="Preço" step="0.01" min="0" required />
+    <input type="text" id="categoria" placeholder="Categoria" />
+    <input type="number" id="estoque" placeholder="Estoque" min="0" />
+    <button type="submit">Cadastrar Planta</button>
+  </form>
+
+  <table>
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Nome</th>
+        <th>Preço</th>
+        <th>Categoria</th>
+        <th>Estoque</th>
+      </tr>
+    </thead>
+    <tbody id="tabelaPlantas"></tbody>
+  </table>
+
+  <footer>
+    &copy; 2025 Planta Viva 🌿
+  </footer>
+
+  <script>
+    const form = document.getElementById('formPlanta');
+    const tabela = document.getElementById('tabelaPlantas');
+    const mensagemDiv = document.getElementById('mensagem');
+
+    function mostrarMensagem(texto, tipo) {
+      mensagemDiv.textContent = texto;
+      mensagemDiv.className = `mensagem ${tipo}`;
+      mensagemDiv.style.display = 'block';
+      setTimeout(() => {
+        mensagemDiv.style.display = 'none';
+      }, 3000);
+    }
+
+    async function carregarPlantas() {
+      try {
+        const res = await fetch('http://localhost:3000/plantas');
+        const plantas = await res.json();
+        tabela.innerHTML = '';
+        
+        if (plantas.length === 0) {
+          tabela.innerHTML = '<tr><td colspan="5" style="text-align:center;">Nenhuma planta cadastrada</td></tr>';
+          return;
+        }
+        
+        plantas.forEach(p => {
+          tabela.innerHTML += `
+            <tr>
+              <td>${p.id}</td>
+              <td>${p.nome}</td>
+              <td>R$ ${p.preco.toFixed(2)}</td>
+              <td>${p.categoria || '-'}</td>
+              <td>${p.estoque || 0}</td>
+            </tr>
+          `;
+        });
+      } catch (erro) {
+        mostrarMensagem('Erro ao carregar plantas. Verifique se o servidor está rodando.', 'erro');
+        console.error('Erro:', erro);
+      }
+    }
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      
+      const novaPlanta = {
+        nome: document.getElementById('nome').value,
+        preco: parseFloat(document.getElementById('preco').value),
+        categoria: document.getElementById('categoria').value,
+        estoque: parseInt(document.getElementById('estoque').value) || 0
+      };
+      
+      try {
+        const res = await fetch('http://localhost:3000/plantas', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(novaPlanta)
+        });
+        
+        if (res.ok) {
+          mostrarMensagem('Planta cadastrada com sucesso! 🌱', 'sucesso');
+          form.reset();
+          carregarPlantas();
+        } else {
+          mostrarMensagem('Erro ao cadastrar planta.', 'erro');
+        }
+      } catch (erro) {
+        mostrarMensagem('Erro ao conectar com o servidor.', 'erro');
+        console.error('Erro:', erro);
+      }
+    });
+
+    carregarPlantas();
+  </script>
+</body>
+</html>
