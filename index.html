@@ -1,218 +1,220 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
+
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Loja de Plantas</title>
+  <meta charset="UTF-8">
+  <title>Loja de Plantas 🌱</title>
+  <link rel="icon" href="planta-removebg-preview.png">
   <style>
     body {
       font-family: Arial, sans-serif;
-      margin: 0;
-      padding-top: 120px;
-      background-color: #f0f8f5;
+      padding: 20px;
+      background: #f2f2f2;
     }
 
-    header {
-      display: flex;
-      align-items: center;
-      width: 100%;
-      height: 100px;
-      background-color: greenyellow;
-      position: fixed;
-      top: 0;
-      left: 0;
-      gap: 20px;
-      padding: 0 20px;
-      box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-      z-index: 1000;
+    h1 {
+      color: #2b7a2b;
     }
 
-    header img {
-      height: 80px;
-      border-radius: 50%;
-      border: 3px solid black;
-    }
-
-    header h1 {
-      font-size: 28px;
-      color: #2e7d32;
-    }
-
-    form {
-      margin: 20px;
-      background-color: #ffffff;
+    section {
+      background: white;
       padding: 15px;
+      margin-bottom: 15px;
       border-radius: 8px;
-      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      box-shadow: 0 0 5px #ccc;
     }
 
-    input, button {
-      padding: 8px;
-      margin: 5px;
-      border-radius: 4px;
-      border: 1px solid #ccc;
+    input,
+    button,
+    textarea {
+      margin: 5px 0;
+      padding: 5px;
     }
 
     button {
-      background-color: #4caf50;
+      background: #2b7a2b;
       color: white;
+      border: none;
       cursor: pointer;
+      padding: 7px 12px;
     }
 
     button:hover {
-      background-color: #45a049;
+      background: #3a9a3a;
     }
 
-    table {
-      width: 90%;
-      margin: 20px auto;
-      border-collapse: collapse;
-      background-color: #fff;
-      box-shadow: 0 0 10px rgba(0,0,0,0.1);
-    }
-
-    th, td {
+    pre {
+      background: #eee;
       padding: 10px;
-      border: 1px solid #ddd;
-      text-align: left;
+      border-radius: 5px;
+      max-height: 200px;
+      overflow-y: auto;
     }
 
-    th {
-      background-color: #c8e6c9;
-    }
-
-    footer {
-      text-align: center;
-      padding: 20px;
-      color: #777;
-    }
-
-    .mensagem {
-      margin: 20px;
-      padding: 10px;
-      border-radius: 4px;
-      display: none;
-    }
-
-    .mensagem.sucesso {
-      background-color: #d4edda;
-      color: #155724;
-      border: 1px solid #c3e6cb;
-    }
-
-    .mensagem.erro {
-      background-color: #f8d7da;
-      color: #721c24;
-      border: 1px solid #f5c6cb;
+    img {
+      height: 100px;
+      vertical-align: middle;
+      margin-right: 10px;
     }
   </style>
 </head>
+
 <body>
-  <header>
-    <img src="https://www.svgrepo.com/show/428309/plant.svg" alt="Logo Planta Viva" />
-    <h1>Planta Viva</h1>
-  </header>
+  <h1><img src="planta-removebg-preview.png">Loja de Plantas de Darel</h1>
 
-  <div id="mensagem" class="mensagem"></div>
+  <section>
+    <h2>Listar todas as plantas</h2>
+    <button onclick="listarPlantas()">Listar</button>
+    <pre id="resultado-lista"></pre>
+  </section>
 
-  <form id="formPlanta">
-    <input type="text" id="nome" placeholder="Nome da planta" required />
-    <input type="number" id="preco" placeholder="Preço" step="0.01" min="0" required />
-    <input type="text" id="categoria" placeholder="Categoria" />
-    <input type="number" id="estoque" placeholder="Estoque" min="0" />
-    <button type="submit">Cadastrar Planta</button>
-  </form>
+  <section>
+    <h2>Buscar planta por ID</h2>
+    <input type="number" id="idBusca" placeholder="ID">
+    <button onclick="buscarPorId()">Buscar</button>
+    <pre id="resultado-busca"></pre>
+  </section>
 
-  <table>
-    <thead>
-      <tr>
-        <th>ID</th>
-        <th>Nome</th>
-        <th>Preço</th>
-        <th>Categoria</th>
-        <th>Estoque</th>
-      </tr>
-    </thead>
-    <tbody id="tabelaPlantas"></tbody>
-  </table>
+  <section>
+    <h2>Cadastrar nova planta</h2>
+    <input type="text" id="nomeNova" placeholder="Nome">
+    <input type="number" id="precoNova" placeholder="Preço" step="0.01">
+    <input type="number" id="estoqueNova" placeholder="Estoque">
+    <button onclick="criarPlanta()">Cadastrar</button>
+    <pre id="resultado-criar"></pre>
+  </section>
 
-  <footer>
-    &copy; 2025 Planta Viva 🌿
-  </footer>
+  <section>
+    <h2>Cadastrar em lote (JSON)</h2>
+    <textarea id="loteJSON" rows="4" cols="50"
+      placeholder='[{"nome":"Planta A","preco":10,"estoque":5}]'></textarea><br>
+    <button onclick="cadastrarLote()">Cadastrar Lote</button>
+    <pre id="resultado-lote"></pre>
+  </section>
+
+  <section>
+    <h2>Atualizar planta</h2>
+    <input type="number" id="idAtualiza" placeholder="ID">
+    <input type="text" id="nomeAtualiza" placeholder="Novo Nome">
+    <input type="number" id="precoAtualiza" placeholder="Novo Preço" step="0.01">
+    <input type="number" id="estoqueAtualiza" placeholder="Novo Estoque">
+    <button onclick="atualizarPlanta()">Atualizar</button>
+    <pre id="resultado-atualiza"></pre>
+  </section>
+
+  <section>
+    <h2>Deletar planta</h2>
+    <input type="number" id="idDeleta" placeholder="ID">
+    <button onclick="deletarPlanta()">Deletar</button>
+    <pre id="resultado-deleta"></pre>
+  </section>
+
+  <section>
+    <h2>Filtrar por preço máximo</h2>
+    <input type="number" id="precoMaxFiltro" placeholder="Preço máximo" step="0.01">
+    <button onclick="filtrarPlantas()">Filtrar</button>
+    <pre id="resultado-filtro"></pre>
+  </section>
+
+  <section>
+    <h2>Outras informações</h2>
+    <button onclick="mostrarQuantidade()">Quantidade de Plantas Cadastradas</button>
+    <button onclick="mostrarPrimeira()">Primeira</button>
+    <button onclick="mostrarUltima()">Última</button>
+    <button onclick="mostrarEstatisticas()">Estatísticas</button>
+    <pre id="resultado-infos"></pre>
+  </section>
 
   <script>
-    const form = document.getElementById('formPlanta');
-    const tabela = document.getElementById('tabelaPlantas');
-    const mensagemDiv = document.getElementById('mensagem');
+    const BASE_URL = 'http://localhost:3000/plantas';
 
-    function mostrarMensagem(texto, tipo) {
-      mensagemDiv.textContent = texto;
-      mensagemDiv.className = `mensagem ${tipo}`;
-      mensagemDiv.style.display = 'block';
-      setTimeout(() => {
-        mensagemDiv.style.display = 'none';
-      }, 3000);
+    async function listarPlantas() {
+      const res = await fetch(BASE_URL);
+      document.getElementById('resultado-lista').textContent = JSON.stringify(await res.json(), null, 2);
     }
 
-    async function carregarPlantas() {
-      try {
-        const res = await fetch('http://localhost:3000/plantas');
-        const plantas = await res.json();
-        tabela.innerHTML = '';
-        
-        if (plantas.length === 0) {
-          tabela.innerHTML = '<tr><td colspan="5" style="text-align:center;">Nenhuma planta cadastrada</td></tr>';
-          return;
-        }
-        
-        plantas.forEach(p => {
-          tabela.innerHTML += `
-            <tr>
-              <td>${p.id}</td>
-              <td>${p.nome}</td>
-              <td>R$ ${p.preco.toFixed(2)}</td>
-              <td>${p.categoria || '-'}</td>
-              <td>${p.estoque || 0}</td>
-            </tr>
-          `;
-        });
-      } catch (erro) {
-        mostrarMensagem('Erro ao carregar plantas. Verifique se o servidor está rodando.', 'erro');
-        console.error('Erro:', erro);
-      }
+    async function buscarPorId() {
+      const id = document.getElementById('idBusca').value;
+      const res = await fetch(`${BASE_URL}/${id}`);
+      document.getElementById('resultado-busca').textContent = res.ok ? JSON.stringify(await res.json(), null, 2) : 'Planta não encontrada';
     }
 
-    form.addEventListener('submit', async (e) => {
-      e.preventDefault();
-      
-      const novaPlanta = {
-        nome: document.getElementById('nome').value,
-        preco: parseFloat(document.getElementById('preco').value),
-        categoria: document.getElementById('categoria').value,
-        estoque: parseInt(document.getElementById('estoque').value) || 0
+    async function criarPlanta() {
+      const body = {
+        nome: document.getElementById('nomeNova').value,
+        preco: parseFloat(document.getElementById('precoNova').value),
+        estoque: parseInt(document.getElementById('estoqueNova').value)
       };
-      
+      const res = await fetch(BASE_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body)
+      });
+      document.getElementById('resultado-criar').textContent = JSON.stringify(await res.json(), null, 2);
+    }
+
+    async function cadastrarLote() {
+      const jsonText = document.getElementById('loteJSON').value;
       try {
-        const res = await fetch('http://localhost:3000/plantas', {
+        const body = JSON.parse(jsonText);
+        const res = await fetch(`${BASE_URL}/lote`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(novaPlanta)
+          body: JSON.stringify(body)
         });
-        
-        if (res.ok) {
-          mostrarMensagem('Planta cadastrada com sucesso! 🌱', 'sucesso');
-          form.reset();
-          carregarPlantas();
-        } else {
-          mostrarMensagem('Erro ao cadastrar planta.', 'erro');
-        }
-      } catch (erro) {
-        mostrarMensagem('Erro ao conectar com o servidor.', 'erro');
-        console.error('Erro:', erro);
+        document.getElementById('resultado-lote').textContent = JSON.stringify(await res.json(), null, 2);
+      } catch (err) {
+        document.getElementById('resultado-lote').textContent = 'JSON inválido';
       }
-    });
+    }
 
-    carregarPlantas();
+    async function atualizarPlanta() {
+      const id = document.getElementById('idAtualiza').value;
+      const body = {
+        nome: document.getElementById('nomeAtualiza').value,
+        preco: parseFloat(document.getElementById('precoAtualiza').value),
+        estoque: parseInt(document.getElementById('estoqueAtualiza').value)
+      };
+      const res = await fetch(`${BASE_URL}/${id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body)
+      });
+      document.getElementById('resultado-atualiza').textContent = res.ok ? JSON.stringify(await res.json(), null, 2) : 'Erro ao atualizar';
+    }
+
+    async function deletarPlanta() {
+      const id = document.getElementById('idDeleta').value;
+      const res = await fetch(`${BASE_URL}/${id}`, { method: 'DELETE' });
+      document.getElementById('resultado-deleta').textContent = res.ok ? JSON.stringify(await res.json(), null, 2) : 'Planta não encontrada';
+    }
+
+    async function filtrarPlantas() {
+      const preco = document.getElementById('precoMaxFiltro').value;
+      const res = await fetch(`${BASE_URL}/filtro?precoMax=${preco}`);
+      document.getElementById('resultado-filtro').textContent = JSON.stringify(await res.json(), null, 2);
+    }
+
+    async function mostrarQuantidade() {
+      const res = await fetch(`${BASE_URL}/quantidade`);
+      document.getElementById('resultado-infos').textContent = JSON.stringify(await res.json(), null, 2);
+    }
+
+    async function mostrarPrimeira() {
+      const res = await fetch(`${BASE_URL}/primeira`);
+      document.getElementById('resultado-infos').textContent = JSON.stringify(await res.json(), null, 2);
+    }
+
+    async function mostrarUltima() {
+      const res = await fetch(`${BASE_URL}/ultima`);
+      document.getElementById('resultado-infos').textContent = JSON.stringify(await res.json(), null, 2);
+    }
+
+    async function mostrarEstatisticas() {
+      const res = await fetch(`${BASE_URL}/estatisticas`);
+      document.getElementById('resultado-infos').textContent = JSON.stringify(await res.json(), null, 2);
+    }
   </script>
 </body>
+
 </html>
