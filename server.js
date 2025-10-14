@@ -1,19 +1,24 @@
 const express = require('express');
-const cors = require('cors'); // Adicione esta linha
+const cors = require('cors'); 
 const app = express();
 
-app.use(cors()); // Adicione esta linha para evitar erros de CORS
+app.use(cors()); 
 app.use(express.json());
 
-let plantas = [];
-let idCounter = 1;
+let plantas = [
+  { id: 1, nome: 'Samambaia', preco: 25.00, estoque: 10 },
+  { id: 2, nome: 'Cacto', preco: 15.50, estoque: 5 },
+  { id: 3, nome: 'Orquídea', preco: 45.00, estoque: 3 },
+  { id: 4, nome: 'Suculenta', preco: 12.00, estoque: 20 },
+  { id: 5, nome: 'Bromélia', preco: 30.00, estoque: 7 }
+];
 
-// GET /plantas - Listar todas
+let idCounter = 6; 
+
 app.get('/plantas', (req, res) => {
   res.json(plantas);
 });
 
-// ⚠️ ROTAS ESPECÍFICAS DEVEM VIR ANTES DE /plantas/:id
 app.get('/plantas/filtro', (req, res) => {
   const precoMax = parseFloat(req.query.precoMax);
   const filtradas = plantas.filter(p => p.preco <= precoMax);
@@ -39,28 +44,24 @@ app.get('/plantas/estatisticas', (req, res) => {
   res.json({ precoMedio, estoqueTotal });
 });
 
-// GET /plantas/:id - Buscar por ID (AGORA VEM DEPOIS)
 app.get('/plantas/:id', (req, res) => {
   const planta = plantas.find(p => p.id === parseInt(req.params.id));
   if (!planta) return res.status(404).send('Planta não encontrada');
   res.json(planta);
 });
 
-// POST /plantas - Criar nova
 app.post('/plantas', (req, res) => {
   const nova = { id: idCounter++, ...req.body };
   plantas.push(nova);
   res.status(201).json(nova);
 });
 
-// POST /plantas/lote
 app.post('/plantas/lote', (req, res) => {
   const novas = req.body.map(p => ({ id: idCounter++, ...p }));
   plantas.push(...novas);
   res.status(201).json(novas);
 });
 
-// PUT /plantas/:id - Atualizar
 app.put('/plantas/:id', (req, res) => {
   const index = plantas.findIndex(p => p.id === parseInt(req.params.id));
   if (index === -1) return res.status(404).send('Planta não encontrada');
@@ -68,7 +69,6 @@ app.put('/plantas/:id', (req, res) => {
   res.json(plantas[index]);
 });
 
-// DELETE /plantas/:id - Deletar
 app.delete('/plantas/:id', (req, res) => {
   const index = plantas.findIndex(p => p.id === parseInt(req.params.id));
   if (index === -1) return res.status(404).send('Planta não encontrada');
@@ -76,7 +76,6 @@ app.delete('/plantas/:id', (req, res) => {
   res.json(deletada[0]);
 });
 
-// Iniciar servidor
 app.listen(3000, () => {
   console.log('API de plantas rodando na porta 3000');
 });
